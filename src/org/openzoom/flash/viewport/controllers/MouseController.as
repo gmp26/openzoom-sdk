@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Benjamin Baum <baum@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -341,7 +342,7 @@ public final class MouseController extends ViewportControllerBase
     /**
      * @private
      */
-    private function view_mouseMoveHandler(event:MouseEvent):void
+    private function view_mousePanningHandler(event:Event):void
     {
         if (!panning)
             return
@@ -406,8 +407,8 @@ public final class MouseController extends ViewportControllerBase
         panning = true
 
         // register for mouse move events
-        view.addEventListener(MouseEvent.MOUSE_MOVE,
-                              view_mouseMoveHandler,
+        view.addEventListener(Event.ENTER_FRAME,
+                              view_mousePanningHandler,
                               false, 0, true)
     }
 
@@ -419,8 +420,8 @@ public final class MouseController extends ViewportControllerBase
         // unregister from mouse move events
         // FIXME
         if (view)
-            view.removeEventListener(MouseEvent.MOUSE_MOVE,
-                                     view_mouseMoveHandler)
+            view.removeEventListener(Event.ENTER_FRAME,
+                                     view_mousePanningHandler)
 
         panning = false
     }
