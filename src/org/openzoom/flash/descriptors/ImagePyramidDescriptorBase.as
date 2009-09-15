@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -278,14 +279,19 @@ public class ImagePyramidDescriptorBase
     /**
      * @private
      */
-    private var levels:Array = []
+    private var _levels:Array = []
+
+    public function get levels():Array {
+    	return _levels;
+    } 
+
 
     /**
      * @private
      */
     protected function addLevel(level:IImagePyramidLevel):IImagePyramidLevel
     {
-        levels.push(level)
+        _levels.push(level)
         return level
     }
 
@@ -297,7 +303,7 @@ public class ImagePyramidDescriptorBase
         if (index < 0 || index >= numLevels)
            throw new ArgumentError("[ImagePyramidDescriptorBase] Illegal level index.")
 
-        return levels[index]
+        return _levels[index]
     }
 
     //--------------------------------------------------------------------------

@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -95,14 +96,14 @@ public final class ImagePyramidRenderer extends Renderer
     //  source
     //----------------------------------
 
-    private var _source:*
+    private var _source:IImagePyramidDescriptor;
 
-    public function get source():*
+    public function get source():IImagePyramidDescriptor
     {
-        return _source
+        return _source;
     }
 
-    public function set source(value:*):void
+    public function set source(value:IImagePyramidDescriptor):void
     {
         if (_source === value)
            return
@@ -178,20 +179,18 @@ public final class ImagePyramidRenderer extends Renderer
      */
     openzoom_internal function getTile(level:int, column:int, row:int):ImagePyramidTile
     {
-        var descriptor:IImagePyramidDescriptor = _source as IImagePyramidDescriptor
-
-        if (!descriptor)
+        if (!_source)
            trace("[ImagePyramidRenderer] getTile: Source undefined")
 
         var tile:ImagePyramidTile = tileCache[ImagePyramidTile.getHashCode(level, column, row)]
 
-        if (!descriptor.existsTile(level, column, row))
+        if (!_source.existsTile(level, column, row))
             return null
 
         if (!tile)
         {
-            var url:String = descriptor.getTileURL(level, column, row)
-            var bounds:Rectangle = descriptor.getTileBounds(level, column, row)
+            var url:String = _source.getTileURL(level, column, row)
+            var bounds:Rectangle = _source.getTileBounds(level, column, row)
 
             tile = new ImagePyramidTile(level, column, row, url, bounds)
             tileCache[tile.hashCode] = tile

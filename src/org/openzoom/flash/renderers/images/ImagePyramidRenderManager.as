@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -240,6 +241,7 @@ public final class ImagePyramidRenderManager implements IDisposable
         fromLevel = optimalLevel.index
 
         var level:IImagePyramidLevel
+        var levels:Array = descriptor.levels;
         var nextTile:ImagePyramidTile
         var renderingQueue:Array = []
 
@@ -247,7 +249,7 @@ public final class ImagePyramidRenderManager implements IDisposable
         for (var l:int = fromLevel; l >= toLevel; --l)
         {
             var done:Boolean = true
-            level = descriptor.getLevelAt(l)
+            level = levels[l] as IImagePyramidLevel;
 
             // Load or draw visible tiles
             var fromPoint:Point = new Point(localBounds.left * level.width,

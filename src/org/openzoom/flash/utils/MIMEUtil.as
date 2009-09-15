@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -67,18 +68,19 @@ public final class MIMEUtil
         switch (extension)
         {
             case "jpg":
-               type = "image/jpeg"
-               break
-
             case "jpeg":
+            case "JPG":
+            case "JPEG":
                type = "image/jpeg"
                break
 
             case "png":
+            case "PNG":
                type = "image/png"
                break
 
             case "gif":
+            case "GIF":
                type = "image/gif"
                break
 

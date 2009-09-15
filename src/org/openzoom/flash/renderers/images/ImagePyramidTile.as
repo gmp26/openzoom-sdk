@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -243,9 +244,13 @@ internal class ImagePyramidTile implements IDisposable,
     //
     //--------------------------------------------------------------------------
 
-    public static function getHashCode(level:int, column:int, row:int):int
+    public static function getHashCode(level:uint, column:uint, row:uint):uint
     {
-        return parseInt([level, column, row].join(""))
+    	// this would mean a maximum of 64 levels, 8192 cols and rows 
+    	level = level << 26
+    	column = column << 13
+    	var x : uint = level | column | row; 
+    	return x;
     }
 
     //--------------------------------------------------------------------------

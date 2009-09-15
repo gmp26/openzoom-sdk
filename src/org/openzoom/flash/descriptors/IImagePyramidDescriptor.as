@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -61,6 +62,14 @@ public interface IImagePyramidDescriptor extends IMultiScaleImageDescriptor
      * Returns the number of levels of this object.
      */
     function get numLevels():int
+
+	//----------------------------------
+	//  levels
+	//----------------------------------
+	/**
+	 * returns the levels-array.
+	 */
+	function get levels():Array
 
     //----------------------------------
     //  tileWidth

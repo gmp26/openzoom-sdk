@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//    Claudius Coenen <coenen@meso.net>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -68,6 +69,13 @@ public final class NetworkQueue extends EventDispatcher
 
     private static const MAX_CONNECTIONS:uint = 8
 
+
+	/**
+	 * singleton instance
+	 */
+	private static const _instance:NetworkQueue = new NetworkQueue();
+	
+
     //--------------------------------------------------------------------------
     //
     //  Constructor
@@ -95,6 +103,13 @@ public final class NetworkQueue extends EventDispatcher
     //  Methods
     //
     //--------------------------------------------------------------------------
+	
+	/**
+	 * please use this instead of instanciating your own Queue
+	 */
+    public static function getInstance():NetworkQueue {
+    	return _instance;
+    }    
 
     public function addRequest(url:String,
                                type:Class,
