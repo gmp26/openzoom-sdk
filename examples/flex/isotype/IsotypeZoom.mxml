@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:openzoom="org.openzoom.flex.components.*"
+    xmlns:controllers="org.openzoom.flash.viewport.controllers.*"
+    xmlns:constraints="org.openzoom.flash.viewport.constraints.*"
+    xmlns:transformers="org.openzoom.flash.viewport.transformers.*"
+    backgroundGradientColors="[0, 0]"
+    layout="absolute"
+    >
+<!--
+applicationComplete="applicationCompleteHandler(event)"
+-->
+
+	<mx:Script>
+		<![CDATA[
+			import org.openzoom.flash.events.NetworkRequestEvent;
+			import org.openzoom.flash.renderers.images.ImagePyramidRenderer;
+			import org.openzoom.flash.net.NetworkQueue;
+			import org.openzoom.flash.descriptors.isotype.IsotypeDescriptor;
+			import mx.controls.Image;
+			import org.openzoom.flash.utils.ExternalMouseWheel;
+			import mx.events.FlexEvent;
+			import org.openzoom.flash.descriptors.IMultiScaleImageDescriptor;
+			
+			// Make sure the sprite drawing class gets linked in
+			private var lottery:Lottery;
+			
+            private var loader:NetworkQueue;
+            private var isoLayer:ImagePyramidRenderer;
+
+			// XML to load
+			private var xml:XML = <isotypeImage>
+				<isocanvas width="1048576" height="1048576" tileWidth="256" tileHeight="256" drawing="Lottery" baseURL="draw:/" />
+			</isotypeImage>;
+
+			// URIs to load
+            private const ISOTYPE_SOURCE:String = "isotypeImage.xml";
+
+           	[Bindable]
+            private var imageDescriptor:IMultiScaleImageDescriptor = new IsotypeDescriptor(ISOTYPE_SOURCE, xml);
+
+/*
+			// This stuff is potentially useful when isotypeImages are loaded in from configuration files.
+			// I found that the container.source parameter could not be changed reliably after the container
+			// was initialised. So deferring this.
+
+            private function applicationCompleteHandler(event:FlexEvent):void
+            {
+                ExternalMouseWheel.initialize(systemManager.stage);
+                                 
+                loader = new NetworkQueue;
+                loader.addRequest(ISOTYPE_SOURCE, XML, ISOTYPE_SOURCE)
+                      .addEventListener(NetworkRequestEvent.COMPLETE,
+                                        request_completeHandler,
+                                        false, 0, false)
+            }
+
+            private function request_completeHandler(event:NetworkRequestEvent):void
+            {
+                var context:String = event.context as String
+
+                 var layerRenderer:ImagePyramidRenderer = new ImagePyramidRenderer();
+                layerRenderer.width = container.sceneWidth;
+                layerRenderer.height = container.sceneHeight;
+                layerRenderer.source = descriptor;
+                isoLayer = layerRenderer;
+
+                container.addChild(layerRenderer);
+            }
+*/
+
+		]]>
+	</mx:Script>
+ 
+    <openzoom:MultiScaleImage
+        id="container"
+        top="0"
+        right="0"
+        bottom="0"
+        left="0"
+        source="{imageDescriptor}"
+        >
+        <openzoom:controllers>
+            <controllers:MouseController smoothPanning="false"/>
+            <controllers:KeyboardController/>
+            <controllers:ContextMenuController/>
+        </openzoom:controllers>
+
+        <openzoom:transformer>
+            <transformers:TweenerTransformer duration="0.2" easing="easeOut"/>
+        </openzoom:transformer>
+
+        <openzoom:constraint>
+            <constraints:CompositeConstraint>
+               <constraints:ZoomConstraint minZoom="1"/>
+               <constraints:CenterConstraint/>
+               <constraints:ScaleConstraint id="scaleConstraint"/>
+            </constraints:CompositeConstraint>
+        </openzoom:constraint>
+
+    </openzoom:MultiScaleImage>	
+</mx:Application>

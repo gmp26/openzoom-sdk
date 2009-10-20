@@ -22,6 +22,7 @@
 //
 //  Contributor(s):
 //    Daniel Gasienica <daniel@gasienica.ch>
+//	  Mike Pearson <gmp26@cam.ac.uk>
 //
 //  Alternatively, the contents of this file may be used under the terms of
 //  either the GNU General Public License Version 3 or later (the "GPL"), or
@@ -39,6 +40,7 @@
 package org.openzoom.flash.net
 {
 
+import flash.display.Bitmap;
 import flash.display.DisplayObject;
 import flash.display.Loader;
 import flash.events.Event;
@@ -47,10 +49,14 @@ import flash.events.IEventDispatcher;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
+import flash.events.TimerEvent;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
+import flash.utils.Timer;
 
 import org.openzoom.flash.core.openzoom_internal;
+import org.openzoom.flash.components.IsotypeDrawingBase;
+import org.openzoom.flash.descriptors.isotype.IsotypeDescriptor;
 import org.openzoom.flash.events.NetworkRequestEvent;
 
 use namespace openzoom_internal;
@@ -78,6 +84,16 @@ internal final class DisplayObjectRequest extends EventDispatcher
     {
         _url = url
         this.context = context
+
+	   // TODO: Use a better url schema for isotype tiles
+        var urlParts:Array = _url.split(/:\/\/|-/);
+		if(urlParts[0]==IsotypeDescriptor.ISOTYPE_PROTOCOL) {
+        	drawing = IsotypeDescriptor.drawingStore[urlParts[1]] as IsotypeDrawingBase;
+        	level = urlParts[2];
+        	col = urlParts[3];
+        	row = urlParts[4];
+			//trace("Drawing: " + _url);
+		}
     }
 
     //--------------------------------------------------------------------------
@@ -85,7 +101,12 @@ internal final class DisplayObjectRequest extends EventDispatcher
     //  Variables
     //
     //--------------------------------------------------------------------------
+    private var drawing:IsotypeDrawingBase;
+    private var level:uint;
+    private var col:uint;
+    private var row:uint;
 
+	private var result:DisplayObject;
     private var context:*
     private var loader:Loader
 
@@ -101,7 +122,13 @@ internal final class DisplayObjectRequest extends EventDispatcher
 
     public function get bytesLoaded():uint
     {
-        return loader ? loader.contentLoaderInfo.bytesLoaded : 0
+    	
+    	//trace("GET BYTESLOADED");
+		if(drawing)
+			return drawing.bytesTotal;
+		if(loader)
+        	return loader.contentLoaderInfo.bytesLoaded
+		return 0
     }
 
     //----------------------------------
@@ -110,7 +137,12 @@ internal final class DisplayObjectRequest extends EventDispatcher
 
     public function get bytesTotal():uint
     {
-        return loader ? loader.contentLoaderInfo.bytesTotal : 0
+    	//trace("GET BYTESTOTAL");
+		if(drawing)
+			return drawing.bytesTotal;
+		if(loader)
+        	return loader.contentLoaderInfo.bytesTotal
+		return 0
     }
 
     //----------------------------------
@@ -130,18 +162,35 @@ internal final class DisplayObjectRequest extends EventDispatcher
     //
     //--------------------------------------------------------------------------
 
+	private var timer:Timer;
+
     /**
      * @inheritDoc
      */
     public function start():void
     {
-       var request:flash.net.URLRequest = new flash.net.URLRequest(url)
-       loader = new Loader()
-       addEventListeners(loader.contentLoaderInfo)
+		if(drawing) {
+			
+			// TODO: generalise Bitmap to allow other DisplayObjects
+			result = new Bitmap();
+			drawing.sketch(result, level, col, row, context);
 
-       // TODO: Does this incur an overhead?
-       var loaderContext:LoaderContext = new LoaderContext(true)
-       loader.load(request, loaderContext)
+			// Note: it doesn't work to call drawingComplete from here. The listener waiting
+			// for the NetworkRequestEvent.COMPLETE would never see it. We have to call drawingComplete
+			// from some other event. I'm using a short timer - there might be a better way.
+			timer = new Timer(1);
+			timer.addEventListener(TimerEvent.TIMER, drawingComplete);
+			timer.start();
+		}
+		else {
+       		var request:flash.net.URLRequest = new flash.net.URLRequest(url)
+       		loader = new Loader()
+       		addEventListeners(loader.contentLoaderInfo)
+
+       		// TODO: Does this incur an overhead?
+       		var loaderContext:LoaderContext = new LoaderContext(true)
+       		loader.load(request, loaderContext)
+		}
     }
 
     //--------------------------------------------------------------------------
@@ -149,6 +198,24 @@ internal final class DisplayObjectRequest extends EventDispatcher
     //  Event handlers
     //
     //--------------------------------------------------------------------------
+
+   /**
+     * @private
+     */
+    private function drawingComplete(event:TimerEvent):void
+    {
+        var displayObject:DisplayObject = result; //event.result as DisplayObject
+
+        var requestEvent:NetworkRequestEvent = new NetworkRequestEvent(NetworkRequestEvent.COMPLETE)
+        requestEvent.request = this
+        requestEvent.data = displayObject
+        requestEvent.context = context
+		
+		timer.stop();
+		timer.removeEventListener(TimerEvent.TIMER, drawingComplete);
+		
+        dispatchEvent(requestEvent)
+    }
 
     /**
      * @private
@@ -244,6 +311,11 @@ internal final class DisplayObjectRequest extends EventDispatcher
      */
     private function disposeLoader():void
     {
+		if(timer) {
+			timer.stop();
+			timer.removeEventListener(TimerEvent.TIMER, drawingComplete);
+		}
+
         if (!loader)
            return
 
@@ -251,7 +323,6 @@ internal final class DisplayObjectRequest extends EventDispatcher
         // @see mx.controls.SWFLoader#load() (1315)
         var useUnloadAndStop:Boolean = true
         var unloadAndStopGC:Boolean = true
-
         if (useUnloadAndStop && "unloadAndStop" in loader)
             loader["unloadAndStop"](unloadAndStopGC)
         else
