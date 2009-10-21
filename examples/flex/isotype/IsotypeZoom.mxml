@@ -7,10 +7,9 @@
     xmlns:transformers="org.openzoom.flash.viewport.transformers.*"
     backgroundGradientColors="[0, 0]"
     layout="absolute"
+	applicationComplete="applicationCompleteHandler(event)"
     >
-<!--
-applicationComplete="applicationCompleteHandler(event)"
--->
+
 
 	<mx:Script>
 		<![CDATA[
@@ -40,6 +39,11 @@ applicationComplete="applicationCompleteHandler(event)"
            	[Bindable]
             private var imageDescriptor:IMultiScaleImageDescriptor = new IsotypeDescriptor(ISOTYPE_SOURCE, xml);
 
+			
+            private function applicationCompleteHandler(event:FlexEvent):void
+            {
+                ExternalMouseWheel.initialize(systemManager.stage);
+            }
 /*
 			// This stuff is potentially useful when isotypeImages are loaded in from configuration files.
 			// I found that the container.source parameter could not be changed reliably after the container
