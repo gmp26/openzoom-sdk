@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<isotypeImage>
+
+ 	<!-- The isocanvas element configures the isocanvas drawing class. Pass whatever
+ 	parameters are needed to draw the image.
+ 	 -->
+	<isocanvas width="1048576" height="1048576" tileWidth="256" tileHeight="256" drawing="Lottery">
+	
+</isotypeImage>
