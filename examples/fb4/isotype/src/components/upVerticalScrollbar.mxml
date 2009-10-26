@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:ai="http://ns.adobe.com/ai/2009" xmlns:d="http://ns.adobe.com/fxg/2008/dt">
+	<fx:Metadata>[HostComponent("spark.components.VScrollBar")]</fx:Metadata>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="disabled"/>
+		<s:State name="inactive"/>
+	</s:states>
+	<s:Button skinClass="components.Track1" x="6" id="track" alpha.disabled="0.5" alpha.inactive="0.5" y="14"/>
+	<s:Button skinClass="components.UpButton1" x="1" y="0" id="decrementButton" alpha.disabled="0.5" alpha.inactive="0.5"/>
+	<s:Button skinClass="components.DownButton1" x="1" y="104" id="incrementButton" alpha.disabled="0.5" alpha.inactive="0.5"/>
+	<s:Button skinClass="components.Thumb1" x="0" y="23" id="thumb" alpha.disabled="0.5" alpha.inactive="0.5"/>
+<!--
+	<s:transitions>
+		<s:Transition fromState="inactive" toState="normal" autoReverse="true">
+			<s:Parallel>
+				<s:Parallel target="{decrementButton}">
+					<s:Fade duration="0"/>
+				</s:Parallel>
+				<s:Parallel target="{thumb}">
+					<s:Fade duration="0"/>
+				</s:Parallel>
+				<s:Parallel target="{track}">
+					<s:Fade duration="0"/>
+				</s:Parallel>
+				<s:Parallel target="{incrementButton}">
+					<s:Fade duration="0"/>
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+	</s:transitions>
+-->
+</s:Skin>
