@@ -3,16 +3,15 @@
 	xmlns:fx="http://ns.adobe.com/mxml/2009" 
 	xmlns:mx="library://ns.adobe.com/flex/halo"
 	xmlns:comp="components.*"
+	xmlns:monitors="monitors.*"
 	xmlns:openzoom="org.openzoom.flex.components.*"
     xmlns:controllers="org.openzoom.flash.viewport.controllers.*"
     xmlns:constraints="org.openzoom.flash.viewport.constraints.*"
     xmlns:transformers="org.openzoom.flash.viewport.transformers.*"
 	xmlns:s="library://ns.adobe.com/flex/spark"
-    backgroundGradientColors="[0, 0]"
+	 backgroundColor="#ffffff"
     layout="absolute"
-	applicationComplete="applicationCompleteHandler(event)"
-    >
-
+	applicationComplete="applicationCompleteHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -27,9 +26,6 @@
 			
 			// Make sure the sprite drawing class gets linked in
 			private var lottery:Lottery;
-			
-            private var loader:NetworkQueue;
-            private var isoLayer:ImagePyramidRenderer;
 
 			// XML to load
 			private var xml:XML = <isotypeImage>
@@ -52,7 +48,10 @@
 			// I found that the container.source parameter could not be changed reliably after the container
 			// was initialised. So deferring this.
 
-            private function applicationCompleteHandler(event:FlexEvent):void
+			private var loader:NetworkQueue;
+			private var isoLayer:ImagePyramidRenderer;
+
+			private function applicationCompleteHandler(event:FlexEvent):void
             {
                 ExternalMouseWheel.initialize(systemManager.stage);
                                  
@@ -77,12 +76,12 @@
             }
 */
 			private function positionZoomer():void {
-				if(zoomer)
-					zoomer.value = 12 - Math.log(container.zoom)*Math.LOG2E;
+				//if(zoomer)
+				//	zoomer.value = 12 - Math.log(container.zoom)*Math.LOG2E;
 			}
 		]]>
 	</fx:Script>
- 
+
    <openzoom:MultiScaleImage
         id="container"
         top="0"
@@ -95,6 +94,9 @@
             <controllers:MouseController smoothPanning="false"/>
             <controllers:KeyboardController/>
             <controllers:ContextMenuController/>
+			
+			<!-- this thing updates the zoomSlider if some other controller zooms -->
+			<monitors:PanZoomMonitor control="{zoomer}"/>
         </openzoom:controllers>
 
         <openzoom:transformer>
@@ -110,6 +112,19 @@
         </openzoom:constraint>
 
     </openzoom:MultiScaleImage>
-	<s:VScrollBar id="zoomer" scaleX="2" scaleY="2" value="{Math.log(container.zoom)*Math.LOG2E}" snapInterval="0.5" skinClass="components.upVerticalScrollbar" fixedThumbSize="true" left="50" top="50" maximum="12" minimum="0" change="{container.zoomTo(Math.pow(2,12-zoomer.value))}"/>
-   
+
+	
+	<fx:Declarations>
+		<s:DropShadowFilter id="drop" distance="1" blurX="2" blurY="2"/>
+	</fx:Declarations>
+	<comp:PanZoomController filters="{[drop]}" id="zoomer" x="20" y="20"
+							snapInterval="0.2" stepSize="0.2" minimum="0" maximum="12" value="0"
+							skinClass="components.panZoomControl.PanZoomControllerSkin" 
+							change="{container.zoomTo(Math.pow(2,zoomer.value))}"
+							panUp="{container.panBy(0, -container.viewport.height*0.1)}"
+							panDown="{container.panBy(0, container.viewport.height*0.1)}"
+							panLeft="{container.panBy(-container.viewport.width*0.1, 0)}"
+							panRight="{container.panBy(container.viewport.width*0.1, 0)}"
+							/>
+
 </mx:Application>

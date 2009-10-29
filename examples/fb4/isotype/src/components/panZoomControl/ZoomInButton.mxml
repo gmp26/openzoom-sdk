@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:ai="http://ns.adobe.com/ai/2009">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<s:Group ai:objID="68c09060" x="0" y="0" alpha.disabled="0.5" id="group1">
+		<s:Ellipse height="14" ai:objID="68c09180" width="14" x="0.5" y="0.5">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" color.over="#fdff00" color.down="#ffcb00"/>
+			</s:fill>
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="0x888888" joints="miter" miterLimit="4" scaleMode="normal" weight="1" color.over="#000000" color.down="#000000"/>
+			</s:stroke>
+		</s:Ellipse>
+		<s:Line ai:objID="68c09620" x="7.5" y="3.5" yFrom="8">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="0x888888" joints="miter" miterLimit="4" scaleMode="normal" weight="3" color.over="#000000" color.down="#000000"/>
+			</s:stroke>
+		</s:Line>
+		<s:Line ai:objID="68c09a90" x="3.5" xFrom="8" y="7.5">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="0x888888" joints="miter" miterLimit="4" scaleMode="normal" weight="3" color.over="#000000" color.down="#000000"/>
+			</s:stroke>
+		</s:Line>
+	</s:Group>
+	<s:transitions>
+		<s:Transition fromState="disabled" toState="up" autoReverse="true">
+			<s:Parallel>
+				<s:Parallel target="{group1}">
+					<s:Fade duration="0"/>
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+	</s:transitions>
+</s:Skin>

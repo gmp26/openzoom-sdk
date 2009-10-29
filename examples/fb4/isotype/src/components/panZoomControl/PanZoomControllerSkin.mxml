@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/halo"
+		xmlns:comp="components.*"
+		minWidth="45" minHeight="165"
+		alpha.disabled="0.5">
+	
+	<fx:Metadata>
+		[HostComponent("components.PanZoomController")]
+	</fx:Metadata> 
+
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+	</s:states>
+	<!--
+	<s:Group x="0.5" y="0">
+		<s:Path data="M 30.39 51.48 C 30.39 46.949 26.829 43.26 22.352 43.033 L 29.909 29.941 L 43.877 21.876 L 29.936 13.827 L 21.954 0 L 13.927 13.904 L 0 21.945 L 13.863 29.949 L 21.42 43.037 C 16.977 43.296 13.451 46.972 13.451 51.48 C 13.451 55.262 15.93 58.463 19.351 59.551 L 19.351 147.243 C 15.93 148.332 13.451 151.533 13.451 155.313 C 13.451 159.992 17.243 163.784 21.92 163.784 C 26.599 163.784 30.39 159.992 30.39 155.313 C 30.39 151.533 27.912 148.332 24.491 147.243 L 24.491 59.551 C 27.912 58.462 30.39 55.262 30.39 51.48 Z M 16.657 16.561 L 27.324 16.561 L 27.324 27.228 L 16.657 27.228 L 16.657 16.561 Z" winding="nonZero" x="0" y="0">
+			<s:fill>
+				<s:SolidColor color="#6f8fbb"/>
+			</s:fill>
+		</s:Path>
+	</s:Group>
+	-->
+	<comp:PanController skinClass="components.panZoomControl.PanControllerSkin" x="3" y="2.3" id="panControl" />
+	<s:Button skinClass="components.panZoomControl.ZoomInButton" x="15" y="44" id="zoomIn" buttonMode="true"/>
+	<s:Button skinClass="components.panZoomControl.ZoomOutButton" x="15" y="148" id="zoomOut" buttonMode="true"/>
+	<s:VSlider skinClass="components.panZoomControl.ZoomSlider" x="14" y="58" id="zoomSlider" buttonMode="true"/>
+	
+</s:Skin>

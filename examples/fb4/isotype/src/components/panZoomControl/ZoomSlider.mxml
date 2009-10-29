@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:ai="http://ns.adobe.com/ai/2009">
+	<fx:Metadata>[HostComponent("spark.components.VSlider")]</fx:Metadata>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="disabled"/>
+	</s:states>
+	<s:Button skinClass="components.panZoomControl.Track" x="7" y="0" id="track"/>
+	<s:Button skinClass="components.panZoomControl.Thumb" x="0" y="10" id="thumb" buttonMode.normal="true"/>
+</s:Skin>
