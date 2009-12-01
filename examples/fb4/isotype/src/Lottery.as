@@ -43,11 +43,10 @@ package
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
 	import flash.display.DisplayObject;
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
-	import flash.text.TextField;
-	import flash.text.TextFieldAutoSize;
+	
+	import mx.core.FlexGlobals;
 	
 	import org.openzoom.flash.components.IsotypeDrawingBase;
 	
@@ -104,14 +103,20 @@ package
 				bmd = (levelCache[level] as BitmapData).clone();
 			}
 
-
+			/* enable this to draw labels
 			var label:TextField = new TextField();
 			label.autoSize = TextFieldAutoSize.LEFT;
 			label.htmlText = '<FONT COLOR="#FFFFFF">('+level+":"+col.toString(16)+":"+row.toString(16)+')</FONT>';
+			*/
 			
 			if(tileContainsWinner(level, col, row)) {
 				var s:Sprite = new Sprite();
-				s.graphics.lineStyle(1, 0xffffff, 1.0);
+				
+				//var showHelp:Boolean = (FlexGlobals.topLevelApplication as IsotypeZoom).help.selected;
+				//var lineAlpha:Number = showHelp ? 1.0 : 0.0;
+				//var lineColor:Number = showHelp ? 0xffffff : 0;
+
+				s.graphics.lineStyle(0.2, 0xffffff, 1.0);
 				s.graphics.moveTo(0.5, 0.5);
 				s.graphics.lineTo(0.5, descriptor.tileHeight-0.5);
 				s.graphics.lineTo(descriptor.tileWidth-0.5, descriptor.tileHeight-0.5);
@@ -128,20 +133,22 @@ package
 				var rowOffset:uint = winRow & mask;
 				var colOffset:uint = winCol & mask;
 				trace("colOffset=",colOffset.toString(16),"rowOffset",rowOffset.toString(16));
-				s.addChild(winner);
 				winner.scaleX = winner.scaleY = scaler;
 				winner.x = (colOffset+0.125)*descriptor.tileWidth/(mask+1);
 				winner.y = (rowOffset+0.125)*descriptor.tileWidth/(mask+1);
+				s.addChild(winner);
 				bmd.draw(s);
 //				bmd.draw(winner, new Matrix(scaler, 0, 0, scaler, (colOffset+0.125)*descriptor.tileWidth/mask, (rowOffset+0.125)*descriptor.tileHeight/mask));
 			}
 			
+			/* enable this to draw labels
 			var scale:Number = 0.7 * descriptor.tileWidth / label.width;
 			var m:Matrix = new Matrix();
 			m.scale(scale, scale);
 			m.translate(0.15*descriptor.tileWidth, (-label.height*scale + descriptor.tileHeight)/2);
 			bmd.draw(label, m);
-
+			*/
+			
 			var bmap:Bitmap = new Bitmap(bmd);
 			(result as Bitmap).bitmapData = bmd;			
 			

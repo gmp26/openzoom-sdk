@@ -458,10 +458,12 @@ public final class MultiScaleContainer extends Sprite
                                    viewport_transformEndHandler,
                                    false, 0, true)
 
+
         addEventListener(Event.ENTER_FRAME,
                          enterFrameHandler,
                          false, 0, true)
-    }
+ 
+	}
 
     private function createScene():void
     {

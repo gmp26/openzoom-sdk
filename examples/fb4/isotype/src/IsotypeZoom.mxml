@@ -23,14 +23,11 @@ License: MPL 1.1/GPL 3/LGPL 3
 
 	<fx:Script>
 		<![CDATA[
-			import org.openzoom.flash.events.NetworkRequestEvent;
-			import org.openzoom.flash.renderers.images.ImagePyramidRenderer;
-			import org.openzoom.flash.net.NetworkQueue;
-			import org.openzoom.flash.descriptors.isotype.IsotypeDescriptor;
-			import mx.controls.Image;
-			import org.openzoom.flash.utils.ExternalMouseWheel;
 			import mx.events.FlexEvent;
+			
 			import org.openzoom.flash.descriptors.IMultiScaleImageDescriptor;
+			import org.openzoom.flash.descriptors.isotype.IsotypeDescriptor;
+			import org.openzoom.flash.utils.ExternalMouseWheel;
 			
 			// Make sure the sprite drawing class gets linked in
 			private var lottery:Lottery;
@@ -87,6 +84,17 @@ License: MPL 1.1/GPL 3/LGPL 3
 				//if(zoomer)
 				//	zoomer.value = 12 - Math.log(container.zoom)*Math.LOG2E;
 			}
+		
+/* 			private function refresh():void {
+				if(help.selected) {
+					container.zoomTo(Math.pow(2,zoomer.value+1))
+				}
+				else {
+					container.zoomTo(Math.pow(2,zoomer.value-1))
+				}
+				container.invalidateSize();
+			}
+ */
 		]]>
 	</fx:Script>
 
@@ -134,5 +142,7 @@ License: MPL 1.1/GPL 3/LGPL 3
 							panLeft="{container.panBy(-container.viewport.width*0.1, 0)}"
 							panRight="{container.panBy(container.viewport.width*0.1, 0)}"
 							/>
-
+<!--	
+	<s:CheckBox id="help" x="20" y="212" label="Help me!" change="refresh()" selected="false"/>
+-->
 </mx:Application>
