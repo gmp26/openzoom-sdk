@@ -226,37 +226,6 @@ internal class ImagePyramidTile implements IDisposable,
 
     //--------------------------------------------------------------------------
     //
-<<<<<<< HEAD
-    //  Properties: Hash
-    //
-    //--------------------------------------------------------------------------
-
-    private var _hashCode:int
-
-    public function get hashCode():int
-    {
-        return _hashCode
-    }
-
-    //--------------------------------------------------------------------------
-    //
-    //  Methods: Hash
-    //
-    //--------------------------------------------------------------------------
-
-    public static function getHashCode(level:uint, column:uint, row:uint):uint
-    {
-    	// this would mean a maximum of 64 levels, 8192 cols and rows 
-    	level = level << 26
-    	column = column << 13
-    	var x : uint = level | column | row; 
-    	return x;
-    }
-
-    //--------------------------------------------------------------------------
-    //
-=======
->>>>>>> gasi/master
     //  Methods: IDisposable
     //
     //--------------------------------------------------------------------------
