@@ -36,9 +36,10 @@
 //  the terms of any one of the MPL, the GPL or the LGPL.
 //
 ////////////////////////////////////////////////////////////////////////////////
-package org.openzoom.flash.descriptors.zoomify
+package org.openzoom.flash.descriptors.iip
 {
 
+import flash.errors.IllegalOperationError;
 import flash.geom.Point;
 
 import org.openzoom.flash.core.openzoom_internal;
@@ -51,11 +52,11 @@ import org.openzoom.flash.utils.math.clamp;
 use namespace openzoom_internal;
 
 /**
- * Descriptor for the <a href="http://www.zoomify.com/">Zoomify</a>
- * multiscale image format.
+ * Descriptor for the <a href="http://iipimage.sourceforge.net/documentation/protocol/">
+ * Internet Imaging Protocol (IIP)</a>
  */
-public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
-                               implements IImagePyramidDescriptor
+public class IIPImageDescriptor extends ImagePyramidDescriptorBase
+                                implements IImagePyramidDescriptor
 {
     include "../../core/Version.as"
 
@@ -65,15 +66,9 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
     //
     //--------------------------------------------------------------------------
 
-    private static const DEFAULT_DESCRIPTOR_FILE_NAME:String = "ImageProperties.xml"
-    private static const DEFAULT_TILE_FOLDER_NAME:String = "TileGroup"
     private static const DEFAULT_TILE_FORMAT:String = "jpg"
     private static const DEFAULT_TYPE:String = "image/jpeg"
     private static const DEFAULT_TILE_OVERLAP:uint = 0
-    private static const DEFAULT_NUM_TILES_IN_FOLDER:uint = 256
-
-    private static const DEFAULT_NUM_IMAGES:int = 1
-    private static const DEFAULT_VERSION:String = "1.8"
 
     //--------------------------------------------------------------------------
     //
@@ -84,70 +79,54 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
     /**
      * Constructor.
      */
-    public function ZoomifyDescriptor(source:String,
-                                      width:uint,
-                                      height:uint,
-                                      tileSize:uint=256)
+    public function IIPImageDescriptor(source:String,
+                                       width:uint,
+                                       height:uint,
+                                       tileWidth:uint=256,
+                                       tileHeight:uint=256)
     {
+        // path to server & image, e.g
+        // http://merovingio.c2rmf.cnrs.fr/fcgi-bin/iipsrv.fcgi?FIF=/home/eros/iipimage/cop31/cop31_pyr_000_090.tif
+        // http://merovingio.c2rmf.cnrs.fr/fcgi-bin/iipsrv.fcgi?FIF=/home/eros/iipimage/Tuberculous.tif
         this.source = source
 
         _width = width
         _height = height
 
-        _tileWidth = _tileHeight = tileSize
+        _tileWidth = tileWidth
+        _tileHeight = tileHeight
         _tileOverlap = DEFAULT_TILE_OVERLAP
 
         _type = DEFAULT_TYPE
-        format = DEFAULT_TILE_FORMAT
 
-        _numLevels = getNumLevels(width, height, tileSize)
-        createLevels(width, height, tileSize, numLevels)
-        tileCountUpToLevel = computeLevelTileCounts(numLevels)
+        _numLevels = getNumLevels(width, height, tileWidth, tileHeight)
+        createLevels(width, height, tileWidth, tileHeight, numLevels)
     }
 
     /**
-     * Create descriptor from XML.
+     * Create descriptor from basic info returned by IIP server.
      */
-    public static function fromXML(source:String, xml:XML):ZoomifyDescriptor
+    public static function fromBasicInfo(source:String, basicInfo:String):IIPImageDescriptor
     {
-        // <IMAGE_PROPERTIES WIDTH="2203" HEIGHT="3290" NUMTILES="169"
-        //        NUMIMAGES="1" VERSION="1.8" TILESIZE="256" />
+        // Max-size:4080 3072
+        // IIP-server:3.65
+        // Max-size:4080 3072
+        // Resolution-number:5
+        // Colorspace,0-4,0:0 0 3 3 0 1 2
 
-        var width:uint = xml.@WIDTH
-        var height:uint = xml.@HEIGHT
-        var tileSize:uint = xml.@TILESIZE
+//      var sizeRegex:RegExp = /max-size: (d+) (d+)/
+//      var width:uint =
+//      var height:uint = ...
+//      var tileWidth:uint = ...
+//      var tileHeight:uint = ...
 
-        return new ZoomifyDescriptor(source,
-                                     width,
-                                     height,
-                                     tileSize)
-    }
-
-    //--------------------------------------------------------------------------
-    //
-    //  Variables
-    //
-    //--------------------------------------------------------------------------
-
-    private var tileCountUpToLevel:Array = []
-    private var format:String
-
-    //--------------------------------------------------------------------------
-    //
-    //  Properties: Zoomify file format
-    //
-    //--------------------------------------------------------------------------
-
-    //----------------------------------
-    //  tileSize
-    //----------------------------------
-
-    /**
-     * Returns the size of a single tile of the image pyramid in pixels.
-     */
-    public function get tileSize():uint
-    {
-        return _tileWidth
+//        return new IIPImageDescriptor(source,
+//                                      width,
+//                                      height,
+//                                      tileWidth,
+//                                      tileHeight)
+        // TODO
+        throw new IllegalOperationError("Not implemented.")
     }
 
     //--------------------------------------------------------------------------
@@ -161,11 +140,8 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
      */
     public function getTileURL(level:int, column:int, row:int):String
     {
-        var length:Number = source.length - DEFAULT_DESCRIPTOR_FILE_NAME.length
-
-        var tileGroup:uint = getTileGroup(level, column, row)
-        var path:String = source.substr(0, length) + DEFAULT_TILE_FOLDER_NAME + tileGroup
-        var url:String = [path, "/", level, "-", column, "-", row, ".", format].join("")
+        var l:IImagePyramidLevel = getLevelAt(level)
+        var url:String = [source, "&jtl=", level, ",", (row * l.numColumns) + column].join("")
 
         return url
     }
@@ -175,8 +151,7 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
      */
     public function getLevelForSize(width:Number, height:Number):IImagePyramidLevel
     {
-        var longestSide:Number = Math.max(width, height)
-        var log2:Number = (Math.log(longestSide) - Math.log(tileSize)) / Math.LN2
+        var log2:Number = Math.log(Math.max(width / tileWidth, height / tileHeight)) / Math.LN2
         var maxLevel:uint = numLevels - 1
         var index:int = clamp(Math.ceil(log2) + 1, 0, maxLevel)
         var level:IImagePyramidLevel = getLevelAt(index)
@@ -184,9 +159,6 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
         // FIXME
         if (width / level.width < 0.5)
             level = getLevelAt(Math.max(0, index - 1))
-
-        if (width / level.width < 0.5)
-            trace("[ZoomifyDescriptor] getLevelForSize():", width / level.width)
 
         return level
     }
@@ -196,7 +168,7 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
      */
     public function clone():IImagePyramidDescriptor
     {
-        return new ZoomifyDescriptor(source, width, height, tileSize)
+        return new IIPImageDescriptor(source, width, height, tileWidth, tileHeight)
     }
 
     //--------------------------------------------------------------------------
@@ -210,7 +182,7 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
      */
     override public function toString():String
     {
-        return "[ZoomifyDescriptor]" + "\n" + super.toString()
+        return "[IIPImageDescriptor]" + "\n" + super.toString()
     }
 
     //--------------------------------------------------------------------------
@@ -218,33 +190,32 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
     //  Methods: Internal
     //
     //--------------------------------------------------------------------------
-
     /**
      * @private
      */
-    private function getNumLevels(width:uint, height:uint, tileSize:uint):uint
+    private function getNumLevels(width:uint, height:uint, tileWidth:uint, tileHeight:uint):uint
     {
         // How many levels until image fits into a single tile
-        return Math.ceil(Math.log(Math.ceil(Math.max(width, height) / tileSize))/Math.LN2) + 1
+        return Math.ceil(Math.log(Math.ceil(Math.max(width / tileWidth, height / tileHeight)))/Math.LN2) + 1
     }
+
 
     /**
      * @private
      */
     private function createLevels(originalWidth:uint,
                                   originalHeight:uint,
-                                  tileSize:uint,
+                                  tileWidth:uint,
+                                  tileHeight:uint,
                                   numLevels:int):void
     {
-        var maxLevel:int = numLevels - 1
-
-        for (var index:int = 0; index <= maxLevel; index++)
+        for (var index:int = 0; index < numLevels; index++)
         {
             var size:Point = getSize(index)
             var width:uint = size.x
             var height:uint = size.y
-            var numColumns:int = Math.ceil(width / tileSize)
-            var numRows:int = Math.ceil(height / tileSize)
+            var numColumns:int = Math.ceil(width / tileWidth)
+            var numRows:int = Math.ceil(height / tileHeight)
             var level:IImagePyramidLevel = new ImagePyramidLevel(this,
                                                                  index,
                                                                  width,
@@ -253,36 +224,6 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
                                                                  numRows)
             addLevel(level)
         }
-    }
-
-    private function computeLevelTileCounts(numLevels:int):Array
-    {
-        var levelTileCount:Array = []
-        levelTileCount[0] = 0
-
-        for (var i:int = 1; i < numLevels; i++)
-        {
-            var l:IImagePyramidLevel = getLevelAt(i-1)
-            levelTileCount.push(l.numColumns * l.numRows + levelTileCount[i-1])
-        }
-
-        return levelTileCount
-    }
-
-    /**
-     * @private
-     *
-     * Calculates the folder this tile resides in.
-     * There's probably a more efficient way to do this.
-     * Correctness has a higher priority for now, so I didn't bother.
-     */
-    private function getTileGroup(level:int, column:int, row:int):int
-    {
-        var numColumns:uint = getLevelAt(level).numColumns
-        var tileIndex:uint = column + row * numColumns + tileCountUpToLevel[level]
-        var tileGroup:uint = tileIndex / DEFAULT_NUM_TILES_IN_FOLDER
-
-        return tileGroup
     }
 
     /**
@@ -301,13 +242,8 @@ public class ZoomifyDescriptor extends ImagePyramidDescriptorBase
     {
         var size:Point = new Point()
         var scale:Number = getScale(level)
-        // Verified that Zoomify levels (tiers) logic uses
-        // divide by two (2) followed by floor both with
-        // official Zoomify Express converter as well as
-        // the open source ZoomifyImage project which
-        // uses Python integer division.
-        size.x = Math.floor(width * scale)
-        size.y = Math.floor(height * scale)
+        size.x = Math.ceil(width * scale)
+        size.y = Math.ceil(height * scale)
 
         return size
     }

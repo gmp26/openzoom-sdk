@@ -96,14 +96,14 @@ public final class ImagePyramidRenderer extends Renderer
     //  source
     //----------------------------------
 
-    private var _source:IImagePyramidDescriptor;
+    private var _source:*
 
-    public function get source():IImagePyramidDescriptor
+    public function get source():*
     {
-        return _source;
+        return _source
     }
 
-    public function set source(value:IImagePyramidDescriptor):void
+    public function set source(value:*):void
     {
         if (_source === value)
            return
@@ -179,13 +179,16 @@ public final class ImagePyramidRenderer extends Renderer
      */
     openzoom_internal function getTile(level:int, column:int, row:int):ImagePyramidTile
     {
-        if (!_source)
+        var descriptor:IImagePyramidDescriptor = _source as IImagePyramidDescriptor
+
+        if (!descriptor)
            trace("[ImagePyramidRenderer] getTile: Source undefined")
 
-        var tile:ImagePyramidTile = tileCache[ImagePyramidTile.getHashCode(level, column, row)]
-
-        if (!_source.existsTile(level, column, row))
+        if (!descriptor.existsTile(level, column, row))
             return null
+
+		var tileHash:String = getTileHash(level, column, row)
+        var tile:ImagePyramidTile = tileCache[tileHash]
 
         if (!tile)
         {
@@ -193,11 +196,22 @@ public final class ImagePyramidRenderer extends Renderer
             var bounds:Rectangle = _source.getTileBounds(level, column, row)
 
             tile = new ImagePyramidTile(level, column, row, url, bounds)
-            tileCache[tile.hashCode] = tile
+            tileCache[tileHash] = tile
         }
 
         return tile
     }
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Methods: Hash
+	//
+	//--------------------------------------------------------------------------
+	
+	private function getTileHash(level:int, column:int, row:int):String
+	{
+		return [level, column, row].join("-")
+	}
 
     //--------------------------------------------------------------------------
     //

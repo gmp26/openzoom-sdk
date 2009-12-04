@@ -47,6 +47,7 @@ import flash.geom.Rectangle;
 import org.openzoom.flash.core.openzoom_internal;
 import org.openzoom.flash.utils.IComparable;
 import org.openzoom.flash.utils.IDisposable;
+import org.openzoom.flash.utils.string.format;
 
 use namespace openzoom_internal;
 
@@ -79,8 +80,6 @@ internal class ImagePyramidTile implements IDisposable,
         this.row = row
         this.url = url
         this.bounds = bounds
-
-        _hashCode = ImagePyramidTile.getHashCode(level, column, row)
     }
 
     //--------------------------------------------------------------------------
@@ -162,10 +161,10 @@ internal class ImagePyramidTile implements IDisposable,
     //--------------------------------------------------------------------------
 
     //----------------------------------
-    //  fadeStart
+    //  blendStartTime
     //----------------------------------
 
-    public var fadeStart:int = 0
+    public var blendStartTime:int = 0
 
     //----------------------------------
     //  alpha
@@ -227,6 +226,7 @@ internal class ImagePyramidTile implements IDisposable,
 
     //--------------------------------------------------------------------------
     //
+<<<<<<< HEAD
     //  Properties: Hash
     //
     //--------------------------------------------------------------------------
@@ -255,6 +255,8 @@ internal class ImagePyramidTile implements IDisposable,
 
     //--------------------------------------------------------------------------
     //
+=======
+>>>>>>> gasi/master
     //  Methods: IDisposable
     //
     //--------------------------------------------------------------------------
@@ -266,7 +268,7 @@ internal class ImagePyramidTile implements IDisposable,
         loading = false
 
         alpha = 0
-        fadeStart = 0
+		blendStartTime = 0
     }
 
     //--------------------------------------------------------------------------
@@ -304,6 +306,18 @@ internal class ImagePyramidTile implements IDisposable,
 
         return 0
     }
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Methods: Debug
+	//
+	//--------------------------------------------------------------------------
+	
+	public function toString():String
+	{
+		return format("[ImagePyramidTile]: ({0}, {1}, {2}) alpha: {3}",
+			level, column, row, alpha)
+	}
 }
 
 }
